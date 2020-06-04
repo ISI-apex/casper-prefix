@@ -532,7 +532,12 @@ bootstrap_tree() {
 	is-rap && LATEST_TREE_YES=1
 	local PV="20210118"
 	if [[ -n ${LATEST_TREE_YES} ]]; then
-		do_tree "${SNAPSHOT_URL}" portage-latest.tar.bz2
+		if [[ -n "${SNAPSHOT_DATE}" ]]; then
+			local snapshot=${SNAPSHOT_DATE}
+		else
+			local snapshot=latest
+		fi
+		do_tree "${SNAPSHOT_URL}" portage-${snapshot}.tar.bz2
 	else
 		do_tree http://dev.gentoo.org/~grobian/distfiles prefix-overlay-${PV}.tar.bz2
 	fi
@@ -2143,13 +2148,12 @@ bootstrap_stage3() {
 	nowdate=$(date +%s)
 	[[ ( ! -e ${PORTDIR}/.unpacked ) && \
 		$((nowdate - (60 * 60 * 24))) -lt ${treedate} ]] || \
-	if [[ ${OFFLINE_MODE} ]]; then
-		# --keep used ${DISTDIR}, which make it easier to download a
-		# snapshot beforehand
-		emerge-webrsync --keep || return 1
-	else
-		emerge --color n --sync || emerge-webrsync || return 1
+	# --keep used ${DISTDIR}, which make it easier to download a
+	# snapshot beforehand
+	if [[ -n "${SNAPSHOT_DATE}" ]]; then
+		snapshot_arg="--revert=${SNAPSHOT_DATE}"
 	fi
+	emerge-webrsync --keep ${snapshot_arg} || return 1
 
 	# avoid installing git or encryption just for fun while completing @system
 	export USE="-git -crypt"
