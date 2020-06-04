@@ -1403,9 +1403,9 @@ bootstrap_stage1() {
 	[[ -x ${ROOT}/tmp/usr/bin/make ]] \
 		|| [[ $(make --version 2>&1) == *GNU" Make "4* ]] \
 		|| (bootstrap_make) || return 1
-	[[ ${OFFLINE_MODE} ]] || [[ -x ${ROOT}/tmp/usr/bin/openssl ]] \
+	[[ -x ${ROOT}/tmp/usr/bin/openssl ]] \
 		|| (bootstrap_libressl) # do not fail if this fails, we'll try without
-	[[ ${OFFLINE_MODE} ]] || type -P wget > /dev/null \
+	type -P wget > /dev/null \
 		|| (bootstrap_wget) || return 1
 	[[ -x ${ROOT}/tmp/usr/bin/sed ]] \
 		|| [[ $(sed --version 2>&1) == *GNU* ]] \
