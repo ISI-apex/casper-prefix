@@ -933,6 +933,49 @@ bootstrap_gnu() {
 }
 
 PYTHONMAJMIN=3.8   # keep this number in line with PV below for stage1,2
+
+#bootstrap_autotools_tarball() {
+#	PN="${1}"
+#	PV="${2}"
+#	PEXT="${3}"
+#	A=${PN}-${PV}.${PEXT}
+#
+#	einfo "Bootstrapping ${A%-*}"
+#
+#	efetch ${DISTFILES_G_O}/distfiles/${A} || return 1
+#
+#	einfo "Unpacking ${A%%-*}"
+#	export S="${PORTAGE_TMPDIR}/${PN}-${PV}"
+#	rm -rf "${S}"
+#	mkdir -p "${S}"
+#	cd "${S}"
+#	if [[ ${PEXT} == "tar.gz" ]] ; then
+#		gzip -dc "${DISTDIR}"/${A} | tar -xf - || return 1
+#	elif [[ ${PEXT} == "tar.xz" ]] ; then
+#		xz -dc "${DISTDIR}"/${A} | tar -xf - || return 1
+#	elif [[ ${PEXT} == "tar.bz2" ]] ; then
+#		bzip2 -dc "${DISTDIR}"/${A} | tar -xf - || return 1
+#	elif [[ ${PEXT} == "tar" ]] ; then
+#		tar -xf "${DISTDIR}"/${A} || return 1
+#	else
+#		einfo "unhandled extension: $PEXT"
+#		return 1
+#	fi
+#	S="${S}"/${PN}-${PV}
+#	cd "${S}"
+#
+#	local makeopts=( ${MAKEOPTS} )
+#
+#	einfo "Compiling ${A%-*}"
+#	CHOST= ${CONFIG_SHELL} ./configure --prefix="${ROOT}"/tmp/usr || return 1
+#	$MAKE "${makeopts[@]}" || return 1
+#
+#	einfo "Installing ${A%-*}"
+#	$MAKE "${makeopts[@]}" -j1 install || return 1
+#
+#	einfo "${A%-*} bootstrapped"
+#}
+
 bootstrap_python() {
 	PV=3.8.6
 	A=Python-${PV}.tar.xz
@@ -1299,6 +1342,10 @@ bootstrap_patch() {
 	bootstrap_gnu patch 2.6.1
 }
 
+bootstrap_patchelf() {
+	bootstrap_gnu patchelf 0.10
+}
+
 bootstrap_gawk() {
 	bootstrap_gnu gawk 5.0.1 || bootstrap_gnu gawk 4.0.1 || \
 		bootstrap_gnu gawk 3.1.8
@@ -1437,6 +1484,9 @@ bootstrap_stage1() {
 	[[ -x ${ROOT}/tmp/usr/bin/gawk ]] \
 		|| [[ $(awk --version < /dev/null 2>&1) == *GNU" Awk "[456789]* ]] \
 		|| bootstrap_gawk || return 1
+	[[ $(patchelf --version 2>&1) == *"patchelf 0.10" ]] \
+		|| [[ $(patchelf --version 2>&1) == *"patchelf 0.9" ]] \
+		|| (bootstrap_patchelf) || return 1
 	# always build our own bash, for we don't know what devilish thing
 	# we're working with now, bug #650284
 	[[ -x ${ROOT}/tmp/usr/bin/bash ]] \
