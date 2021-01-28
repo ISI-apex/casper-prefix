@@ -1,0 +1,386 @@
+From a8d2667ff71d5bc93908cc2e3743a5a5117d26b6 Mon Sep 17 00:00:00 2001
+From: Alexei Colin <ac@alexeicolin.com>
+Date: Fri, 22 Jan 2021 15:23:39 -0500
+Subject: [PATCH] sys-libs/glibc: dynamic linker path for ppc64 LE
+
+See Bug 755551
+
+        powerpc
+            32-bit, hard-float, BE: /lib/ld.so.1
+            32-bit, soft-float, BE: /lib/ld.so.1
+            64-bit, hard-float, BE: /lib64/ld64.so.1
+            64-bit, hard-float, LE: /lib64/ld64.so.2
+
+Source: https://sourceware.org/glibc/wiki/ABIList#powerpc
+
+Signed-off-by: Alexei Colin <ac@alexeicolin.com>
+---
+ sys-libs/glibc/glibc-2.19-r2.ebuild | 3 ++-
+ sys-libs/glibc/glibc-2.30-r8.ebuild | 3 ++-
+ sys-libs/glibc/glibc-2.30-r9.ebuild | 3 ++-
+ sys-libs/glibc/glibc-2.31-r6.ebuild | 3 ++-
+ sys-libs/glibc/glibc-2.31-r7.ebuild | 3 ++-
+ sys-libs/glibc/glibc-2.32-r2.ebuild | 3 ++-
+ sys-libs/glibc/glibc-2.32-r3.ebuild | 3 ++-
+ sys-libs/glibc/glibc-2.32-r5.ebuild | 3 ++-
+ sys-libs/glibc/glibc-2.32-r6.ebuild | 3 ++-
+ sys-libs/glibc/glibc-2.32-r7.ebuild | 3 ++-
+ sys-libs/glibc/glibc-9999.ebuild    | 3 ++-
+ 11 files changed, 22 insertions(+), 11 deletions(-)
+
+diff --git a/sys-libs/glibc/glibc-2.19-r2.ebuild b/sys-libs/glibc/glibc-2.19-r2.ebuild
+index 47ae2c5..e4751e6 100644
+--- a/sys-libs/glibc/glibc-2.19-r2.ebuild
++++ b/sys-libs/glibc/glibc-2.19-r2.ebuild
+@@ -1076,7 +1076,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# s390
+ 		s390    /lib/ld.so.1
+ 		s390x   /lib/ld64.so.1
+@@ -1089,12 +1088,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-2.30-r8.ebuild b/sys-libs/glibc/glibc-2.30-r8.ebuild
+index 4888fb0..45f4028 100644
+--- a/sys-libs/glibc/glibc-2.30-r8.ebuild
++++ b/sys-libs/glibc/glibc-2.30-r8.ebuild
+@@ -1212,7 +1212,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		lp64d   /lib/ld-linux-riscv64-lp64d.so.1
+ 		lp64    /lib/ld-linux-riscv64-lp64.so.1
+@@ -1228,12 +1227,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-2.30-r9.ebuild b/sys-libs/glibc/glibc-2.30-r9.ebuild
+index 8765ce6..a294fa9 100644
+--- a/sys-libs/glibc/glibc-2.30-r9.ebuild
++++ b/sys-libs/glibc/glibc-2.30-r9.ebuild
+@@ -1214,7 +1214,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		lp64d   /lib/ld-linux-riscv64-lp64d.so.1
+ 		lp64    /lib/ld-linux-riscv64-lp64.so.1
+@@ -1230,12 +1229,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-2.31-r6.ebuild b/sys-libs/glibc/glibc-2.31-r6.ebuild
+index 671c8ee..4c32676 100644
+--- a/sys-libs/glibc/glibc-2.31-r6.ebuild
++++ b/sys-libs/glibc/glibc-2.31-r6.ebuild
+@@ -1241,7 +1241,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		lp64d   /lib/ld-linux-riscv64-lp64d.so.1
+ 		lp64    /lib/ld-linux-riscv64-lp64.so.1
+@@ -1257,12 +1256,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-2.31-r7.ebuild b/sys-libs/glibc/glibc-2.31-r7.ebuild
+index dce72823..4f1b361 100644
+--- a/sys-libs/glibc/glibc-2.31-r7.ebuild
++++ b/sys-libs/glibc/glibc-2.31-r7.ebuild
+@@ -1241,7 +1241,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		lp64d   /lib/ld-linux-riscv64-lp64d.so.1
+ 		lp64    /lib/ld-linux-riscv64-lp64.so.1
+@@ -1257,12 +1256,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-2.32-r2.ebuild b/sys-libs/glibc/glibc-2.32-r2.ebuild
+index e34d1e0..94f694a 100644
+--- a/sys-libs/glibc/glibc-2.32-r2.ebuild
++++ b/sys-libs/glibc/glibc-2.32-r2.ebuild
+@@ -1265,7 +1265,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		ilp32d  /lib/ld-linux-riscv32-ilp32d.so.1
+ 		ilp32   /lib/ld-linux-riscv32-ilp32.so.1
+@@ -1283,12 +1282,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-2.32-r3.ebuild b/sys-libs/glibc/glibc-2.32-r3.ebuild
+index 96c2577..bc2d896 100644
+--- a/sys-libs/glibc/glibc-2.32-r3.ebuild
++++ b/sys-libs/glibc/glibc-2.32-r3.ebuild
+@@ -1270,7 +1270,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		ilp32d  /lib/ld-linux-riscv32-ilp32d.so.1
+ 		ilp32   /lib/ld-linux-riscv32-ilp32.so.1
+@@ -1288,12 +1287,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-2.32-r5.ebuild b/sys-libs/glibc/glibc-2.32-r5.ebuild
+index ac64c00..9b0f611 100644
+--- a/sys-libs/glibc/glibc-2.32-r5.ebuild
++++ b/sys-libs/glibc/glibc-2.32-r5.ebuild
+@@ -1270,7 +1270,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		ilp32d  /lib/ld-linux-riscv32-ilp32d.so.1
+ 		ilp32   /lib/ld-linux-riscv32-ilp32.so.1
+@@ -1288,12 +1287,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-2.32-r6.ebuild b/sys-libs/glibc/glibc-2.32-r6.ebuild
+index 415b9cf..d107a5d 100644
+--- a/sys-libs/glibc/glibc-2.32-r6.ebuild
++++ b/sys-libs/glibc/glibc-2.32-r6.ebuild
+@@ -1270,7 +1270,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		ilp32d  /lib/ld-linux-riscv32-ilp32d.so.1
+ 		ilp32   /lib/ld-linux-riscv32-ilp32.so.1
+@@ -1288,12 +1287,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-2.32-r7.ebuild b/sys-libs/glibc/glibc-2.32-r7.ebuild
+index 848e2df..b71121f 100644
+--- a/sys-libs/glibc/glibc-2.32-r7.ebuild
++++ b/sys-libs/glibc/glibc-2.32-r7.ebuild
+@@ -1270,7 +1270,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		ilp32d  /lib/ld-linux-riscv32-ilp32d.so.1
+ 		ilp32   /lib/ld-linux-riscv32-ilp32.so.1
+@@ -1288,12 +1287,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+diff --git a/sys-libs/glibc/glibc-9999.ebuild b/sys-libs/glibc/glibc-9999.ebuild
+index 279753c..e1f9f5d 100644
+--- a/sys-libs/glibc/glibc-9999.ebuild
++++ b/sys-libs/glibc/glibc-9999.ebuild
+@@ -1255,7 +1255,6 @@ glibc_do_src_install() {
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# riscv
+ 		ilp32d  /lib/ld-linux-riscv32-ilp32d.so.1
+ 		ilp32   /lib/ld-linux-riscv32-ilp32.so.1
+@@ -1273,12 +1272,14 @@ glibc_do_src_install() {
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+-- 
+1.8.3.1
+--- a/eclass/toolchain-glibc.eclass	2021-01-22 15:56:58.833154290 -0500
++++ b/eclass/toolchain-glibc.eclass	2021-01-22 15:57:10.459512368 -0500
+@@ -1240,7 +1240,6 @@
+ 		n64     /lib64/ld.so.1
+ 		# powerpc
+ 		ppc     /lib/ld.so.1
+-		ppc64   /lib64/ld64.so.1
+ 		# s390
+ 		s390    /lib/ld.so.1
+ 		s390x   /lib/ld64.so.1
+@@ -1253,12 +1252,14 @@
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64.so.1
++			ppc64   /lib64/ld64.so.2
+ 		)
+ 		;;
+ 	big)
+ 		ldso_abi_list+=(
+ 			# arm
+ 			arm64   /lib/ld-linux-aarch64_be.so.1
++			ppc64   /lib64/ld64.so.1
+ 		)
+ 		;;
+ 	esac
+--- a/sys-libs/glibc/Manifest	2021-01-22 16:56:04.406314478 -0500
++++ b/sys-libs/glibc/Manifest	2021-01-22 16:56:11.000000000 -0500
+@@ -28,16 +28,18 @@
+ DIST glibc-2.32.tar.xz 16744512 BLAKE2B a56b4afbb35315c5cd6dca0f62e44455dceae3e6e88a8453621f9a5394a60ddf10ca9309b2db0911830c7fd77e3faa5d94694eb94d5b2c05fc5285cef52255da SHA512 8460c155b7003e04f18dabece4ed9ad77445fa2288a7dc08e80a8fc4c418828af29e0649951bd71a54ea2ad2d4da7570aafd9bdfe4a37e9951b772b442afe50b
+ DIST locale-gen-2.00.tar.gz 7738 BLAKE2B cde6de5ba3400aea24d0d5f1b79471f89f09fb747c8e371e38316c7ada92f967e0865f573f23cb353d82419c234724143c0aeca9eb70eb945dfc581cc7491eb1 SHA512 b609fddb9ec5e567c008841fef3390eddb5d6e7699a8271b3b8c0ade1b44b0ac2e5d1daa8b9acabf3432e3b88110b538a96f209b1ad0f9e988b7efce66606dff
+ DIST locale-gen-2.10.tar.gz 7747 BLAKE2B 49f569c5ae5260fca128503bc6f22d6f6f1cda817920c41fdadadf1527bbb4f3eb161f79fa729830666a4673e9092f99f4685ec8fcac8ddea0b8242bca9c1f4f SHA512 e350e60d458d67638e3090711fca05af6fafac06c51b97648244549f8a0621dab7543f09dc7ad4c62392f13bdae8e5875dc6d0b6c3d83efc29d116bc2eef92db
+-EBUILD glibc-2.19-r2.ebuild 38315 BLAKE2B 6002933b094b0606e06a3f749cecdd9bae79ad3c08ef3ad35a2b5b1e4250b7c40f8454802bd98f634439f73f26c4561a909f7dca4ea2558ea5bb815034c4986a SHA512 fa5193a014bccd29eb0b641de634a43af0d8517a7dfde591b5eeb5e73d6ccb2a8b16ee4db09594db60a0a959da2c33f9d480be6f6e050bbc3d54507101089124
++EBUILD glibc-2.19-r2.ebuild 38344 BLAKE2B dbdc1cfdd8709d6805c529d0b87745e6fd03af300056dd04e4d05cf8151f0dddf93e655ee1f82d404b6113a0ee1a66e2954ee9c5bb61aba09128ecf083772a6f SHA512 ce2698268008caeae1ff6895a8eaa3c3a9bfae649a4d2f1503444c4f84dcd362fa11e26a1540892ca8ff0e6a5bda76d8e72594d796d1fb55fbd41ce1ca8b5148
+ EBUILD glibc-2.25-r11.ebuild 6063 BLAKE2B a995a2553fad56abe09f0f890e2c70f94568675057367795acc7e62fdeb8b103a8ed9b5228bbe3aa74a70c7d657808ee0420c6c8931386c7a9c2adb0c330d15c SHA512 1b8e906841492e4f9361f909e91069c3a642d84a0216fab18b434f61db991c13765a31e29175854d43bf1b8159b462cd02e138bd593990c2306afd70f163a0cd
+-EBUILD glibc-2.30-r8.ebuild 43113 BLAKE2B e567ea4544419609ce3f02ac06ce8ee2175d11502e947187334ec02cca11dacbb5453d514fe8b1c77418259e8f0bbd4306cdfa6aa573426e95ba56f910a9534c SHA512 b85c7656eb09b9702d352b2e20c334d70b764ddedacc6a218b3a921c990314ec80a4ff14e234a3bebf810f3482c45b323e9edc3c2044266341125b7095186126
+-EBUILD glibc-2.30-r9.ebuild 43267 BLAKE2B 5705e5c2c6558d1eecb0b1df532512cda073e1cd9e182d0864abf64f209f58f1fd8d73789381f1f6556e59e65134a361e3235299917588eb7ae881fb4c90c460 SHA512 38eb6ece3fba563af2d600acb4ec01f0f8b3719c953db82b5c6caf838bb5522f241cbd3b34da36cab89f10fcdfb9b3af3931ca48964e2292a88decc6567324ab
+-EBUILD glibc-2.31-r6.ebuild 44382 BLAKE2B 232d74149e6028963993873c373e1fc744e4b0a3eb33aed47cd045503d55c2a77836c5bf7a96a3496c9d2d863a691ae1268f62d3f029a5cdd417c9492f3b3392 SHA512 61d0bb3df2cba90d53956774d4b4d52fa63649c6d9e21cc08f903bc63dbb30d6e412c0e71824dde753553bd64dee711603cb094cdcf35bbd28f6b5e911ebf735
+-EBUILD glibc-2.31-r7.ebuild 44385 BLAKE2B 05f69a4d44b2c07a44a94e9d3ee2eb204dd2349387abc45b456abf2b5577810255a6cab1db4aa4e2c116dc785964442b3744b333863692500a41875dea9651d4 SHA512 0ed26e18b3219143d7d74086dc21efc7d52a5e6be80fb9a053dd339f25c9ef00f8b75bf2e0ae3ae1e732b724fabf2443df9b1bbefbb850510e97dcfb0359e797
+-EBUILD glibc-2.32-r2.ebuild 44988 BLAKE2B d1c13c6044d3423344be28f0acf6d8da56b431e31740bc4b4ae8678a83e4c8bfc52b37eb9c781677a28422e55a0b49c0d8e0af1278c7573df118e1fb154dfd89 SHA512 1e6cc8d84d645e32d6c5ebe0ef03a6e89f93d2f65b0632797095f5840067af5eaebc1da59b98a639c76bb1a2a09d99acad425a397fefd1289815e8de39dc7ec6
+-EBUILD glibc-2.32-r3.ebuild 44716 BLAKE2B 6d1bd0dd3fc1abc299017eb3b44dea6ce9a48508a4b1a5a630cd5588cbc8ede7d64905e3c93648751a535f74d453b5ca1f5bd5328c7f998aa76bf79eff229bf7 SHA512 cf758668454847b5093e767afb41bde42b1523cc3c1835e349332c5da9de6a839a3583a9d7b4ca393c1328fc92f46190ee60b601006f7d851f696621a64e2758
+-EBUILD glibc-2.32-r5.ebuild 44716 BLAKE2B 528ff6eecfd4f2927fa2b635d96906816a3fe42f15d5cd8e445aea0262040d4ef70a73d5e0815268338b9b85c2e6ef2f235a9c2d1ea4ec0ec09c21c8da7ca742 SHA512 e7f8a4e14afe496985f75d58852dc09c090c85593200dc3e5060e3ff3dd5072948491414f0c8422ac41b46d7fc98fa381dead5ead7237f560154982f2df0f577
+-EBUILD glibc-2.32-r6.ebuild 44722 BLAKE2B 7112bee1e2ffc56c4415da3d2edaf22a63ca642015c4f73a8b03788cff177bab1eecf73e5cb01837125b6c5d50ce5838723f5ebfc4f0facf059613bf1db2b42b SHA512 1ca2e4bc72751ec4753a1ef7bf0b75e9444b31109b424be4a52d60e0c55fac985e9f04d6355aede516c43357da8d73b09dafc92baa51a8b99c76a4df19245f05
+-EBUILD glibc-2.32-r7.ebuild 44725 BLAKE2B fb5bd9c69dd97049f6fef5869316eded8a07e95ae396caefa33dc8654a79be503596ab68fdab6a56890735891a9f6cf3f7a1685f39240d5665e4976b43b2c848 SHA512 b6b09698723fc6a7a54dc76ce475309a94666fd729999f41d35b7267bc767a2a9dd40498161c4b7722142c254a508f998399f8af0d3b2896f8c75a3091381cb4
+-EBUILD glibc-9999.ebuild 44212 BLAKE2B 206ee7699d37e925c1f04af78b539ab0bbd56c19cd9b4546e077be7c656fe1df735c3437926fc481edad79e54a80911f353e62ab25418d330c4cf25d584f91d0 SHA512 1a88e2c6acf7c9567270710d37c615358e0f5ba9a08b0506e650c084f7ec1f9ab3835e159dd648ce7f7fee464033ca342e67ded2beacbc1fcfdd9893776bafc3
++EBUILD glibc-2.30-r8.ebuild 43142 BLAKE2B 38b38040afccccdea6e96e98c57f3f85efbddff326682917e2b7e878c1c57a11ff8dac830f22bdb7987f1dc7a138a932b18857ff7cd67204eb9559e37605d5d9 SHA512 e06296374b2dca6a39de36eeb02fbeec2dee5638dd9ab0c95387f16b2d559c99a675d0e90a184f3bbf8c3db85441b4a14cdbea5e1e70e877d9b3b632317b91db
++EBUILD glibc-2.30-r9.ebuild 43296 BLAKE2B 2cf7b1d60bb1cb0f341223bfdfe773f4d2b7f8c55f519187edc906d4363e688fa0127071d3ba960307a00c7abed378bf2b72ee8bebedf323bf9c2823c9045b85 SHA512 6057c2a3a040b9ee58f5d0e320181e0fdd1ec726151c93b34c8313c9a4902de5c7b8ce9bd56851c1b33d28a27cda01d2c63bcd9b07f840c98336bdb69d2e4099
++EBUILD glibc-2.31-r6.ebuild 44411 BLAKE2B 504eb6f5706f6bed30fad8aca135ed6e0ce033ac0dd4275f32fe2eaccc6609ba19de5c30712bd750240dc6e0219f078a133f32662ba5bfd439cd4c4101e2ee82 SHA512 436bf9278961cf9c2a111c0e614313ac4b1a0b0b588db38bfeefc0ab46911d338e264c2d6a3b58cb3a7385f93e3d664ed5e52a87c24f008797b0fd3bad05f735
++EBUILD glibc-2.31-r7.ebuild 44414 BLAKE2B 1d10d90c6ca0e7f686818e27f5cb63ef76b2dce39c1d1de94db32d8257b57faa46d7299c038b9d3f4d6cf0e33c3eda5cf9628be9b4a00d1f3496fa5d770a5016 SHA512 f10ebf8ba005a78526604cacad240ad8a86f46826fbeb4f2dd89c4c559018df6a68e2f5f2749049b743d0b62ea29e294492eb91f2875cac5b2c63febc8f22e21
++EBUILD glibc-2.32-r2.ebuild 45017 BLAKE2B e1c0ad9a805486ca346be15ecf0312fcc714e96aab7d713a4873963a3757254d588fa72e2e4a46d448d7b6c6b7f48a7ee4b6f3a875c015f5e1a3739bad7056d4 SHA512 9f0cc16b24456b6167b0bff615486811e75a29e2f8cd9c783e6c816ddc9d1e8e864e54f3cae3d20a304471560c4cb8f74db75f3198af63f9fec8bc98c9ba52f3
++EBUILD glibc-2.32-r3.ebuild 44745 BLAKE2B e985cb649cd70d64a7403c6654b027cff2a9583623efc191ae8039b52743c61467e467dab956fdec64a6218354fb86ede3fb0c511fbb07b40179ddbab2041872 SHA512 9b55a9274402f3bc45e0ba4d4756229a06c42e63e43189ff89c27fcd99e74f419f87f5a6f54c493c3d3be0ee53e02ecc1cffa7bb97aa7000829fa7a2f158da05
++EBUILD glibc-2.32-r5.ebuild 44745 BLAKE2B 0ac7314f33e0a1167ac4a3bca218fdfedcebcf9abfe24a7bdefb78df138916660e3b51224b6aee95c146ecfe7366860a8fb857f3030f2eaf76f59e0ba4a0c14d SHA512 e2527050a655813c56a7c24aba1733560220072b6cb07f357a16b416367812a34b03224f3f250932f6fcab9132c59e8731ade0e943dfc48323005eb2fcdd14e4
++EBUILD glibc-2.32-r6.ebuild 44751 BLAKE2B dba7665e8a8e1f33ad851b88b30ae72570942db938522db953e0e8a9a7ada4c987bccaedde3a8bb5f0968a586594c3571804b4c111a5b907b14a396f2cf13c6e SHA512 e480d6fa8b3f37d9c3d96a012ee0f21d7c16d1a94a32c7b368fb59929d3ac268f2f188b86e74ed145df45f6cf5df59bf309e0eb8254bcde831728c9ccab4193a
++EBUILD glibc-2.32-r7.ebuild 44754 BLAKE2B 2ecd9345a739891e52a7cb8aec1e85bd5eb9a9f53c34187c052a5e40375005abf34835311aa70bac56073886d1974006baaac77ba90289a71e42986e37c426cd SHA512 89ca1381cb0486801323058309099530b4057e9c6fb1f7e73900bbc4873eb30e9e7d888ecf1c0c3a9261099682fb99ce17158452938acae350342572da5cc453
++EBUILD glibc-9999.ebuild 44241 BLAKE2B 27e984888b1c4e09b1b4b182128edd73c243f2fd695429773b5d6ed6428b5130898951be67e19b27446ea4fc796617a9be26e2a460c443938450f1e3f5cec84e SHA512 2922eccd1d797f2468348b2e278a45f1dfcd9472b3511c8a7254b90169bdd7b46df7b54d1666f803da62ea52ba6c334360f79c556d3af6c2d2a9c6f8ef27de09
++MISC Manifest.orig 13304 BLAKE2B b31aca31aeea54e55ca1c2133c4072df271bafdb1ac98afc26474d5c31013d83bc709ef267a50b6f4ccce0473bc93cc5d4a41a28c131282d34e66a08b10462af SHA512 a0e42b2b82d3646e2408c4b4db24d899e5e4976ae39a07feffb78e455cc0d764ada3d4ceac900900bd06f797b225b248de2bff42ec576f86bf2c13512ac6b89a
++MISC Manifest.rej 9661 BLAKE2B c1da3ce1a08a943bb31f981508962d020febb544b0ed9b3bfb39e990ab262c34c08d4e673e4a9851e87c6d1f8cd3fec0a93381ff64182b40a28fbb91c737275b SHA512 f5f6331d60df1689e71acaf974181655bd08439d500d69cc16869238843e7921ebe68d73f577389b275476fab2a4cf9d5a63e76576223b2f876a30ca8afd22eb
+ MISC metadata.xml 1611 BLAKE2B 3bd777c160ea20cdbd86cca791d9fd4ff02f8d100344235ec74fff37d5cae1e7119e0ec26969707e75a983dcdb23e994559c8be128ef40fa0ec9ed655017466d SHA512 08be6d085ac47b140fff17a3be8cee77e066a4536cdce76fa44c77875dec2a9dc236ff67ff44301abf75cb196d1902feb2a139dda420220248b46dd9cdb16b9f

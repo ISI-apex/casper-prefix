@@ -523,6 +523,15 @@ do_tree() {
 		estatus "stage1: unpacking Portage tree"
 		bzip2 -dc ${DISTDIR}/$2 | \
 			tar -xf - -C ${PORTDIR} --strip-components=1 || return 1
+
+		echo "Apply fixes for bugs..."
+		local selfdir="$(dirname $0)" # hack! points to gpref.sh
+		local patchdir="${selfdir}/../../prefix"/patches
+		pushd "${PORTDIR}" || return 1
+		patch -p1 < ${patchdir}/0001-profiles-prefixify-dynamic-linker-for-ppc64.patch || return 1
+		patch -p1 < ${patchdir}/0001-snapshot-sys-libs-glibc-dynamic-linker-path-for-ppc64-LE.patch || return 1
+		popd || return 1
+
 		touch ${PORTDIR}/.unpacked
 	fi
 }
@@ -2154,6 +2163,17 @@ bootstrap_stage3() {
 		snapshot_arg="--revert=${SNAPSHOT_DATE}"
 	fi
 	emerge-webrsync --keep ${snapshot_arg} || return 1
+
+	if [[ ! -f ${PORTDIR}/patched ]]; then
+		echo "Re-apply fixes for bugs..."
+		local selfdir="$(dirname $0)" # hack! points to gpref.sh
+		local patchdir="${selfdir}/../../prefix"/patches
+		pushd "${PORTDIR}" || return 1
+		patch -p1 < ${patchdir}/0001-profiles-prefixify-dynamic-linker-for-ppc64.patch || return 1
+		patch -p1 < ${patchdir}/0001-gentoo-sys-libs-glibc-dynamic-linker-path-for-ppc64-LE.patch || return 1
+		popd || return 1
+		touch "${PORTDIR}/patched"
+	fi
 
 	if [[ ! -f "${ROOT}"/etc/passwd.patched ]]; then
 		echo "portage:x:$(id -u):$(id -g):portage:/var/tmp/portage:/bin/false" >> "${ROOT}"/etc/passwd

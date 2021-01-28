@@ -1,0 +1,72 @@
+From 8c0994fbd5a61a196e0c879decb571b279c37c26 Mon Sep 17 00:00:00 2001
+From: Alexei Colin <acolin@isi.edu>
+Date: Fri, 22 Jan 2021 00:01:50 -0500
+Subject: [PATCH 1/2] profiles: prefixify dynamic linker for ppc64
+
+The issue: prefix stage3 fails because the binaries built
+by the stage3 GCC toolchain fail to run, because they
+refer to the host's dynamic linker:
+
+	$ which gawk
+	/myprefix/usr/bin/gawk
+
+	$ gawk --version
+	gawk: /lib64/libm.so.6: version `GLIBC_2.29' not found (required by gawk)
+
+	$ readelf -l $(which gawk) | grep -i 'program
+	      [Requesting program interpreter: /lib64/ld64.so.2]
+
+The cause is that the toolchain doesn't insert a prefixified path
+into the binary because the default -dynamic-linker is not prefixified:
+
+	$ which powerpc64le-unknown-linux-gnu-gcc
+	/myprefix/usr/bin/powerpc64le-unknown-linux-gnu-gcc
+	$ echo 'int main() { return 0; }' > test.c
+	$ powerpc64le-unknown-linux-gnu-gcc -v -o test test.c
+	COLLECT_GCC_OPTIONS='-v' '-o' 'testx'
+	 /myprefix/usr/libexec/gcc/powerpc64le-unknown-linux-gnu/10.2.0/collect2
+	--eh-frame-hdr -V -m elf64lppc -dynamic-linker /libb64/ld64.so.2  ...
+
+The root cause:
+
+Prefixifying is done by patching the GCC source code with a sed
+expression in profile.bashrc. The pattern in that sed expression doesn't
+match the source file for ppc64 (aka. rs6000). The ppc64 file differs
+from the rest in that it has a macro for the prefix.
+
+Notes on fix:
+
+I opted to special-case another sed expression to set that unique
+DYNAMIC_LINKER_PREFIX macro rather than attempt to make a single sed
+expression that would modify the *_DYNAMIC_LINKER macros in ppc64.
+Rationale is that if someone happens to look at the patched source file,
+it would make more sense if the DYNAMIC_LINKER_PREFIX is set to our
+prefix, instead of if that macro is set to empty but the
+*_DYNAMIC_LINKER macros have effectively two prefixes, one hardcoded
+added by sed, one from the DYNAMIC_LINKER_PREFIX macro.
+
+Signed-off-by: Alexei Colin <ac@alexeicolin.com>
+---
+ profiles/features/prefix/standalone/profile.bashrc | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/profiles/features/prefix/standalone/profile.bashrc b/profiles/features/prefix/standalone/profile.bashrc
+index 49293ad..70eb5e9 100644
+--- a/profiles/features/prefix/standalone/profile.bashrc
++++ b/profiles/features/prefix/standalone/profile.bashrc
+@@ -11,7 +11,11 @@ if [[ ${CATEGORY}/${PN} == sys-devel/gcc && ${EBUILD_PHASE} == configure ]]; the
+     einfo "Prefixifying dynamic linkers..."
+     for h in gcc/config/*/*linux*.h; do
+ 	ebegin "  Updating $h"
+-	sed -i -r "/_DYNAMIC_LINKER/s,([\":])(/lib),\1${EPREFIX}\2,g" $h
++	if [[ "${h}" == gcc/config/rs6000/linux*.h ]]; then
++	    sed -i -r "s,(DYNAMIC_LINKER_PREFIX\s+)\"\",\1\"${EPREFIX}\",g" $h
++	else
++	    sed -i -r "/_DYNAMIC_LINKER/s,([\":])(/lib),\1${EPREFIX}\2,g" $h
++	fi
+ 	eend $?
+     done
+ 
+-- 
+1.8.3.1
+
