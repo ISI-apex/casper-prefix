@@ -2155,6 +2155,12 @@ bootstrap_stage3() {
 	fi
 	emerge-webrsync --keep ${snapshot_arg} || return 1
 
+	if [[ ! -f "${ROOT}"/etc/passwd.patched ]]; then
+		echo "portage:x:$(id -u):$(id -g):portage:/var/tmp/portage:/bin/false" >> "${ROOT}"/etc/passwd
+		echo "portage::$(id -g):portage" >> "${ROOT}"/etc/group
+		touch "${ROOT}"/etc/passwd.patched
+	fi
+
 	# avoid installing git or encryption just for fun while completing @system
 	export USE="-git -crypt"
 
